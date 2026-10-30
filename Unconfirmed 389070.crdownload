@@ -1,0 +1,507 @@
+# PYTHON CASE STUDY SOLUTIONS
+# Uses only basic syllabus topics:
+# variables, data types, operators, if/else, loops, strings,
+# lists, nested lists, tuples and tuple unpacking.
+#
+# Each case study is a separate program. Run the required section
+# by copying that section into a Python file or uncommenting it.
+
+# ============================================================
+# 1. UNIVERSITY SCHOLARSHIP ALLOCATION
+# ============================================================
+print("\nCASE STUDY 1: UNIVERSITY SCHOLARSHIP ALLOCATION")
+
+# Student record: (name, aggregate, subject1, subject2, attendance, family_income)
+students = [
+    ("Anu", 91, 88, 90, 96, 150000),
+    ("Balu", 85, 72, 80, 92, 180000),
+    ("Charan", 91, 88, 90, 98, 140000),
+    ("Divya", 78, 80, 75, 95, 100000),
+    ("Esha", 89, 91, 87, 80, 90000)
+]
+
+minimum_aggregate = 80
+minimum_subject = 60
+minimum_attendance = 85
+maximum_income = 200000
+
+eligible = []
+
+for student in students:
+    name, aggregate, sub1, sub2, attendance, income = student
+
+    if (aggregate >= minimum_aggregate and
+        sub1 >= minimum_subject and sub2 >= minimum_subject and
+        attendance >= minimum_attendance and income <= maximum_income):
+        eligible.append(student)
+
+# Ranking: aggregate (high), attendance (high), income (low).
+# Simple bubble sort using only loops and list operations.
+i = 0
+while i < len(eligible):
+    j = 0
+    while j < len(eligible) - 1:
+        first = eligible[j]
+        second = eligible[j + 1]
+
+        if (first[1] < second[1] or
+            (first[1] == second[1] and first[4] < second[4]) or
+            (first[1] == second[1] and first[4] == second[4]
+             and first[5] > second[5])):
+            eligible[j], eligible[j + 1] = eligible[j + 1], eligible[j]
+        j = j + 1
+    i = i + 1
+
+print("Eligible students in rank order:")
+rank = 1
+for student in eligible:
+    print(rank, student[0], "Aggregate:", student[1],
+          "Attendance:", student[4], "Income:", student[5])
+    rank = rank + 1
+
+if len(eligible) == 0:
+    print("No student is eligible.")
+
+
+# ============================================================
+# 11. EXAMINATION RESULT AND GRACE-MARK VALIDATION
+# ============================================================
+print("\nCASE STUDY 11: EXAMINATION RESULT AND GRACE-MARK VALIDATION")
+
+# Each student: [name, [subject marks]]
+results = [
+    ["Anu", [38, 45, 32]],
+    ["Balu", [28, 44, 39]],
+    ["Charan", [20, 35, 42]],
+    ["Divya", [50, 48, 46]]
+]
+
+maximum_marks = 100
+pass_mark = 35
+grace_limit = 5
+
+for student in results:
+    name = student[0]
+    marks = student[1]
+    final_marks = []
+    grace_used = 0
+    failed_subjects = 0
+    total = 0
+
+    for mark in marks:
+        if mark < 0 or mark > maximum_marks:
+            print(name, "- Invalid marks found.")
+            failed_subjects = failed_subjects + 1
+            final_marks.append(mark)
+        elif mark < pass_mark:
+            needed = pass_mark - mark
+            if needed <= grace_limit - grace_used:
+                mark = mark + needed
+                grace_used = grace_used + needed
+                final_marks.append(mark)
+            else:
+                final_marks.append(mark)
+                failed_subjects = failed_subjects + 1
+        else:
+            final_marks.append(mark)
+
+    for mark in final_marks:
+        if mark >= 0 and mark <= maximum_marks:
+            total = total + mark
+
+    print("\nStudent:", name)
+    print("Final subject marks:", final_marks)
+    print("Grace marks used:", grace_used)
+    print("Total:", total)
+
+    if failed_subjects == 0:
+        percentage = total / len(final_marks)
+        if percentage >= 75:
+            print("Result: PASS - Distinction")
+        elif percentage >= 60:
+            print("Result: PASS - First Class")
+        elif percentage >= 50:
+            print("Result: PASS - Second Class")
+        else:
+            print("Result: PASS")
+    else:
+        print("Result: FAIL")
+
+
+# ============================================================
+# 21. TRAFFIC VIOLATION PENALTY CALCULATOR
+# ============================================================
+print("\nCASE STUDY 21: TRAFFIC VIOLATION PENALTY CALCULATOR")
+
+# Violation: (vehicle category, offence, repeat offence)
+violations = [
+    ("two_wheeler", "no_helmet", False),
+    ("car", "overspeeding", True),
+    ("two_wheeler", "signal_jump", False),
+    ("car", "drunk_driving", False)
+]
+
+fine_rules = [
+    ("two_wheeler", "no_helmet", 500),
+    ("car", "no_helmet", 500),
+    ("two_wheeler", "overspeeding", 1000),
+    ("car", "overspeeding", 2000),
+    ("two_wheeler", "signal_jump", 1000),
+    ("car", "signal_jump", 1000),
+    ("two_wheeler", "drunk_driving", 10000),
+    ("car", "drunk_driving", 10000)
+]
+
+total_fine = 0
+disqualified = False
+
+for violation in violations:
+    vehicle, offence, repeat = violation
+    fine = 0
+    found = False
+
+    for rule in fine_rules:
+        if vehicle == rule[0] and offence == rule[1]:
+            fine = rule[2]
+            found = True
+            break
+
+    if found == False:
+        print("Unknown violation:", offence)
+    else:
+        if repeat == True:
+            fine = fine * 2
+
+        print(vehicle, "-", offence, "- Fine:", fine)
+        total_fine = total_fine + fine
+
+        if offence == "drunk_driving":
+            disqualified = True
+
+print("Total penalty:", total_fine)
+if disqualified:
+    print("Disqualification condition: YES - driving disqualification review required")
+else:
+    print("Disqualification condition: NO")
+
+
+# ============================================================
+# 31. STRING-BASED EXAMINATION ANSWER EVALUATION
+# ============================================================
+print("\nCASE STUDY 31: STRING-BASED EXAMINATION ANSWER EVALUATION")
+
+answer_key = "ABCDACBD"
+student_answers = [
+    ("Anu", "ABCDACBD"),
+    ("Balu", "AB--ACBD"),
+    ("Charan", "AACD----"),
+    ("Divya", "BBCDACBD")
+]
+
+correct_mark = 1
+negative_mark = 0.25
+
+for student in student_answers:
+    name = student[0]
+    answers = student[1].upper()
+    correct = 0
+    incorrect = 0
+    unanswered = 0
+
+    if len(answers) != len(answer_key):
+        print(name, "- Invalid answer length.")
+    else:
+        for i in range(len(answer_key)):
+            if answers[i] == "-" or answers[i] == "":
+                unanswered = unanswered + 1
+            elif answers[i] == answer_key[i]:
+                correct = correct + 1
+            else:
+                incorrect = incorrect + 1
+
+        score = (correct * correct_mark) - (incorrect * negative_mark)
+        print("\nStudent:", name)
+        print("Correct:", correct)
+        print("Incorrect:", incorrect)
+        print("Unanswered:", unanswered)
+        print("Final score:", score)
+
+
+# ============================================================
+# 41. NESTED LIST CLASSROOM OCCUPANCY ANALYSIS
+# ============================================================
+print("\nCASE STUDY 41: CLASSROOM OCCUPANCY ANALYSIS")
+
+# 0 means vacant, -1 means reserved, positive number is roll number.
+classrooms = [
+    [[101, 102, 0], [103, -1, 104]],
+    [[105, 0, 106], [0, 107, -1]]
+]
+
+assigned_rolls = []
+occupied = 0
+reserved = 0
+vacant = 0
+duplicates = []
+
+for room in classrooms:
+    for row in room:
+        for seat in row:
+            if seat == -1:
+                reserved = reserved + 1
+            elif seat == 0:
+                vacant = vacant + 1
+            else:
+                occupied = occupied + 1
+                if seat in assigned_rolls:
+                    duplicates.append(seat)
+                else:
+                    assigned_rolls.append(seat)
+
+print("Occupied seats:", occupied)
+print("Reserved seats:", reserved)
+print("Vacant seats:", vacant)
+print("Duplicate roll numbers:", duplicates)
+
+
+# ============================================================
+# 51. BUS PASSENGER OCCUPANCY SIMULATION
+# ============================================================
+print("\nCASE STUDY 51: BUS PASSENGER OCCUPANCY SIMULATION")
+
+capacity = 50
+passengers = 20
+
+# Each stop: (boarding, alighting)
+stops = [(10, 0), (8, 5), (15, 10), (4, 6), (0, 12)]
+
+for stop_number, stop in enumerate(stops, start=1):
+    boarding = stop[0]
+    alighting = stop[1]
+
+    if alighting > passengers:
+        print("Stop", stop_number, "- Invalid: more people getting down than inside.")
+        alighting = passengers
+
+    passengers = passengers - alighting
+    passengers = passengers + boarding
+
+    print("Stop:", stop_number, "Passengers:", passengers)
+
+    if passengers > capacity:
+        print("CAPACITY VIOLATION! Bus capacity is", capacity)
+    else:
+        print("Capacity is valid.")
+
+print("Final passenger count:", passengers)
+
+
+# ============================================================
+# 61. NESTED LIST EXAMINATION SEATING VALIDATION
+# ============================================================
+print("\nCASE STUDY 61: EXAMINATION SEATING VALIDATION")
+
+# 0 = empty seat, -1 = reserved seat, positive = roll number
+seating = [
+    [201, 202, 0, -1],
+    [203, 201, 204, 0],
+    [205, -1, 206, 999]
+]
+
+valid_roll_numbers = [201, 202, 203, 204, 205, 206, 207]
+seen = []
+duplicates = []
+invalid = []
+empty_count = 0
+reserved_count = 0
+occupied_count = 0
+
+for row in seating:
+    for seat in row:
+        if seat == 0:
+            empty_count = empty_count + 1
+        elif seat == -1:
+            reserved_count = reserved_count + 1
+        else:
+            occupied_count = occupied_count + 1
+
+            if seat not in valid_roll_numbers:
+                invalid.append(seat)
+
+            if seat in seen:
+                duplicates.append(seat)
+            else:
+                seen.append(seat)
+
+print("Duplicate roll numbers:", duplicates)
+print("Invalid student allocations:", invalid)
+print("Empty seats:", empty_count)
+print("Reserved seats:", reserved_count)
+print("Occupied seats:", occupied_count)
+
+
+# ============================================================
+# 71. INTEGRATED UNIVERSITY FEE AND ELIGIBILITY AUDIT
+# ============================================================
+print("\nCASE STUDY 71: UNIVERSITY FEE AND ELIGIBILITY AUDIT")
+
+# Student: [roll, name, total_fee, paid_fee, attendance, internal_marks]
+records = [
+    [1, "Anu", 50000, 50000, 90, 28],
+    [2, "Balu", 50000, 40000, 80, 25],
+    [3, "Charan", 50000, 50000, 65, 18],
+    [4, "Divya", 50000, 45000, 92, 15]
+]
+
+minimum_attendance = 75
+minimum_internal = 20
+
+for record in records:
+    roll = record[0]
+    name = record[1]
+    total_fee = record[2]
+    paid_fee = record[3]
+    attendance = record[4]
+    internal = record[5]
+    reasons = []
+
+    if paid_fee < total_fee:
+        reasons.append("Fee due: " + str(total_fee - paid_fee))
+
+    if attendance < minimum_attendance:
+        reasons.append("Low attendance")
+
+    if internal < minimum_internal:
+        reasons.append("Low internal marks")
+
+    print("\nRoll:", roll, "Name:", name)
+
+    if len(reasons) == 0:
+        print("Status: Eligible for examination")
+    else:
+        print("Status: Not eligible")
+        print("Reasons:")
+        for reason in reasons:
+            print("-", reason)
+
+
+# ============================================================
+# 81. CAMPUS EVENT SEATING AND ENTRY VALIDATION
+# ============================================================
+print("\nCASE STUDY 81: CAMPUS EVENT SEATING AND ENTRY VALIDATION")
+
+# 0 = empty seat; other values are ticket/registration IDs
+seats = [
+    ["T101", "T102", 0],
+    ["T103", "T104", "T105"],
+    [0, "T106", "T107"]
+]
+
+registered_tickets = ["T101", "T102", "T103", "T104",
+                      "T105", "T106", "T107", "T108"]
+
+entry_scans = ["T101", "T102", "T101", "T105", "T999", "T108"]
+
+seated_tickets = []
+for row in seats:
+    for seat in row:
+        if seat != 0:
+            seated_tickets.append(seat)
+
+valid_entries = []
+duplicate_entries = []
+invalid_entries = []
+
+for ticket in entry_scans:
+    if ticket not in registered_tickets:
+        invalid_entries.append(ticket)
+    elif ticket in valid_entries:
+        duplicate_entries.append(ticket)
+    else:
+        valid_entries.append(ticket)
+
+vacant_seats = 0
+for row in seats:
+    for seat in row:
+        if seat == 0:
+            vacant_seats = vacant_seats + 1
+
+print("Valid entries:", valid_entries)
+print("Duplicate entries:", duplicate_entries)
+print("Invalid tickets:", invalid_entries)
+print("Total seating capacity:", len(seats) * len(seats[0]))
+print("Vacant seating capacity:", vacant_seats)
+
+
+# ============================================================
+# 91. ADVANCED STRING-BASED REGISTRATION RECORD ANALYZER
+# ============================================================
+print("\nCASE STUDY 91: REGISTRATION RECORD ANALYZER")
+
+# Format: ROLL|NAME|EMAIL|PHONE
+registration_records = [
+    "101|ANU|anu@gmail.com|9876543210",
+    "102|BALU|balu@gmail.com|9876543211",
+    "101|CHARAN|charan@gmail.com|9876543212",
+    "103|DI|wrongemail|12345",
+    "104|ESHA|esha@gmail.com|9876543213"
+]
+
+seen_rolls = []
+seen_emails = []
+
+for record in registration_records:
+    fields = record.split("|")
+
+    errors = []
+
+    if len(fields) != 4:
+        print("\nRecord:", record)
+        print("Error: Wrong number of fields")
+    else:
+        roll = fields[0]
+        name = fields[1]
+        email = fields[2]
+        phone = fields[3]
+
+        # Validate roll number
+        if len(roll) != 3 or roll.isdigit() == False:
+            errors.append("Invalid roll number")
+
+        # Validate name
+        if len(name) < 2 or name.isalpha() == False:
+            errors.append("Invalid name")
+
+        # Basic email validation
+        if "@" not in email or "." not in email:
+            errors.append("Invalid email")
+
+        # Validate phone number
+        if len(phone) != 10 or phone.isdigit() == False:
+            errors.append("Invalid phone number")
+
+        # Duplicate checks
+        if roll in seen_rolls:
+            errors.append("Duplicate roll number")
+        else:
+            seen_rolls.append(roll)
+
+        if email in seen_emails:
+            errors.append("Duplicate email")
+        else:
+            seen_emails.append(email)
+
+        print("\nRegistration record:", record)
+        print("Roll:", roll)
+        print("Name:", name)
+        print("Email:", email)
+        print("Phone:", phone)
+
+        if len(errors) == 0:
+            print("Status: Valid registration")
+        else:
+            print("Status: Invalid registration")
+            for error in errors:
+                print("-", error)
+
+print("\nEND OF ALL 10 CASE STUDY PROGRAMS")
